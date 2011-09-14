@@ -70,6 +70,8 @@ struct _Compselect {
   guint        filter_timeout;
   GtkComboBox *combobox_behaviors;
 
+  GtkTreeView *footptreeview;
+  GtkWidget   *footpvpaned;
   gboolean hidden;
 };
 

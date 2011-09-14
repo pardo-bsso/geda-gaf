@@ -1366,6 +1366,8 @@ compselect_constructor (GType type,
   GtkWidget *libview, *inuseview;
   GtkWidget *preview, *combobox;
   GtkWidget *alignment, *frame;
+  GtkWidget *hbox;
+  GtkWidget *footpvpaned;
 
   /* chain up to constructor of parent class */
   object = G_OBJECT_CLASS (compselect_parent_class)->
@@ -1383,6 +1385,12 @@ compselect_constructor (GType type,
   /* vertical pane containing preview and attributes */
   vpaned = GTK_WIDGET (g_object_new (GTK_TYPE_VPANED, NULL));
   compselect->vpaned = vpaned;
+
+  /* vertical pane containing footprint preview */
+  footpvpaned = GTK_WIDGET (g_object_new (GTK_TYPE_VPANED, NULL));
+  compselect->footpvpaned = footpvpaned;
+
+  hbox = GTK_WIDGET (g_object_new (GTK_TYPE_HBOX, NULL));
 
   /* horizontal pane containing selection and preview */
   hpaned = GTK_WIDGET (g_object_new (GTK_TYPE_HPANED,
@@ -1446,7 +1454,19 @@ compselect_constructor (GType type,
     gtk_container_add (GTK_CONTAINER (frame), attributes);
   }
 
-  gtk_paned_pack2 (GTK_PANED (hpaned), vpaned, FALSE, FALSE);
+  if (GSCHEM_DIALOG (compselect)->w_current->component_select_attrlist == NULL) {
+    /* compselect->footptreeview = NULL; */
+  } else {
+    frame = GTK_WIDGET (g_object_new (GTK_TYPE_FRAME,
+                                      /* GtkFrame */
+                                      "label", _("Footprints"),
+                                      NULL));
+    gtk_paned_pack2 (GTK_PANED (footpvpaned), frame, FALSE, FALSE);
+  }
+
+  gtk_box_pack_start (GTK_BOX (hbox), vpaned, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox), footpvpaned, FALSE, FALSE, 0);
+  gtk_paned_pack2 (GTK_PANED (hpaned), hbox, FALSE, FALSE);
 
   /* add the hpaned to the dialog vbox */
   gtk_box_pack_start (GTK_BOX (GTK_DIALOG (compselect)->vbox), hpaned,
